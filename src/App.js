@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import ParticlesBg from 'particles-bg'
 import Clarifai from 'clarifai'
 import Navigation from './components/Navigation/Navigation'
-import Signin from "./components/Signin/Signin";
+import SignIn from "./components/SignIn/SignIn";
 import Register from './components/Register/Register'
 import Logo from './components/Logo/Logo'
 import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm'
@@ -16,7 +16,7 @@ import './App.css';
 // });
 
 const initialState = {
-    input: '', imageUrl: '', box: {}, route: 'signin', isSignedIn: false, user: {
+    input: '', imageUrl: '', box: {}, route: 'home', isSignedIn: false, user: {
         id: '', name: '', email: '', entries: 0, joined: ''
     }
 }
@@ -73,10 +73,6 @@ class App extends Component {
         const MODEL_ID = 'face-detection';
         const MODEL_VERSION_ID = '6dc7e46bc9124c5c8824be4822abe105';
         const IMAGE_URL = this.state.inputs;
-
-        ///////////////////////////////////////////////////////////////////////////////////
-        // YOU DO NOT NEED TO CHANGE ANYTHING BELOW THIS LINE TO RUN THIS EXAMPLE
-        ///////////////////////////////////////////////////////////////////////////////////
 
         const raw = JSON.stringify({
             "user_app_id": {
@@ -139,7 +135,8 @@ class App extends Component {
         return (<div className='App'>
             <ParticlesBg className='particles' num={150} type="cobweb" bg={true}/>
             <Navigation isSignedIn={isSignedIn} onRouteChange={this.onRouteChange}/>
-            {route === 'home' ? <div>
+            {
+                route === 'home' ? <div>
                 <Logo/>
                 <Rank
                 name={this.state.user.name}
@@ -154,8 +151,9 @@ class App extends Component {
                     box={box}
                 />
             </div> : (this.state.route === 'signin'
-                ? <Signin loadUser={this.loadUser} onRouteChange={this.onRouteChange}/> :
-                <Register loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>)}
+                ? <SignIn loadUser={this.loadUser} onRouteChange={this.onRouteChange}/> :
+                <Register loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>)
+            }
         </div>)
     }
 }
