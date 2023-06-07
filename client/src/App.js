@@ -1,6 +1,5 @@
 import React, {Component} from 'react'
 import ParticlesBg from 'particles-bg'
-import Clarifai from 'clarifai'
 import Navigation from './components/Navigation/Navigation'
 import SignIn from "./components/SignIn/SignIn";
 import Register from './components/Register/Register'
@@ -16,7 +15,7 @@ import './App.css';
 // });
 
 const initialState = {
-    input: '', imageUrl: '', box: {}, route: 'home', isSignedIn: false, user: {
+    input: '', imageUrl: '', box: {}, route: 'register', isSignedIn: false, user: {
         id: '', name: '', email: '', entries: 0, joined: ''
     }
 }
