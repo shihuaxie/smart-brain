@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 const Register = ({ onRouteChange, loadUser }) => {
     const [name, setName] = useState('');
@@ -17,23 +18,30 @@ const Register = ({ onRouteChange, loadUser }) => {
         setPassword(event.target.value);
     };
 
+    // const onSubmitSignIn = () => {
+    //     fetch('http://localhost:4321/test', {
+    //         method: 'post',
+    //         headers: { 'content-type': 'application/json' },
+    //         body: JSON.stringify({
+    //             email: email,
+    //             password: password,
+    //             name: name
+    //         })
+    //     })
+    //         .then(response => response.json())
+    //         .then(user => {
+    //             if (user.id) {
+    //                 loadUser(user);
+    //                 onRouteChange('home');
+    //             }
+    //         });
+    // };
     const onSubmitSignIn = () => {
-        fetch('http://localhost:4321/test', {
-            method: 'post',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({
-                email: email,
-                password: password,
-                name: name
-            })
-        })
-            .then(response => response.json())
-            .then(user => {
-                if (user.id) {
-                    loadUser(user);
-                    onRouteChange('home');
-                }
-            });
+        axios.post('/register', {
+            name,
+            email,
+            password,
+        });
     };
 
     return (

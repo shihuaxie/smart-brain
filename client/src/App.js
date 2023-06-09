@@ -8,8 +8,9 @@ import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm'
 import Rank from './components/Rank/Rank'
 import FaceRecognition from './components/FaceRecognition/FaceRecognition'
 import './App.css';
+import axios from "axios";
 
-
+axios.defaults.baseURL = 'http://localhost:4321';
 // const app = new Clarifai.App({
 //     apiKey: 'your key'
 // });
@@ -19,7 +20,7 @@ const App = () => {
     const [input, setInput] = useState('');
     const [imageUrl, setImageUrl] = useState('');
     const [box, setBox] = useState({});
-    const [route, setRoute] = useState('home');
+    const [route, setRoute] = useState('register');
     const [isSignedIn, setIsSignedIn] = useState(false);
     const [user, setUser] = useState({
         id: '',
