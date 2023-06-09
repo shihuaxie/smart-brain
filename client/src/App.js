@@ -11,6 +11,7 @@ import './App.css';
 import axios from "axios";
 
 axios.defaults.baseURL = 'http://localhost:4321';
+axios.defaults.withCredentials = true;
 // const app = new Clarifai.App({
 //     apiKey: 'your key'
 // });
@@ -24,9 +25,8 @@ const App = () => {
     const [isSignedIn, setIsSignedIn] = useState(false);
     const [user, setUser] = useState({
         id: '',
-        name: 'wifi',
+        name: '',
         email: '',
-        entries: 0,
         joined: ''
     });
 
@@ -35,7 +35,6 @@ const App = () => {
             id: data.id,
             name: data.name,
             email: data.email,
-            entries: data.entries,
             joined: data.joined
         });
     };
@@ -108,9 +107,9 @@ const App = () => {
                         })
                     })
                         .then(result => result.json())
-                        .then(count => {
-                            setUser(prevUser => ({ ...prevUser, entries: count }));
-                        })
+                        // .then(count => {
+                        //     setUser(prevUser => ({ ...prevUser, entries: count }));
+                        // })
                         .catch(console.log);
                 }
                 displayFaceBox(calculateFaceLocation(result));
@@ -124,7 +123,6 @@ const App = () => {
                 id: '',
                 name: '',
                 email: '',
-                entries: 0,
                 joined: ''
             });
         } else if (route === 'home') {
@@ -141,7 +139,7 @@ const App = () => {
             {route === 'home' ? (
                 <div>
                     <Logo />
-                    <Rank name={user.name} entries={user.entries} />
+                    <Rank name={user.name}  />
                     <ImageLinkForm onInputChange={onInputChange} onButtonSubmit={onButtonSubmit} />
                     <FaceRecognition imageUrl={imageUrl} box={box} />
                 </div>
