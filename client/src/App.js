@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, {useState} from 'react'
 import ParticlesBg from 'particles-bg'
 import Navigation from './components/Navigation/Navigation'
 import SignIn from "./components/SignIn/SignIn";
@@ -14,31 +14,32 @@ import './App.css';
 //     apiKey: 'your key'
 // });
 
-const initialState = {
-    input: '', imageUrl: '', box: {}, route: 'register', isSignedIn: false, user: {
-        id: '', name: '', email: '', entries: 0, joined: ''
-    }
-}
 
-class App extends Component {
-    constructor() {
-        super();
-        this.state = initialState;
-    }
+const App = () => {
+    const [input, setInput] = useState('');
+    const [imageUrl, setImageUrl] = useState('');
+    const [box, setBox] = useState({});
+    const [route, setRoute] = useState('home');
+    const [isSignedIn, setIsSignedIn] = useState(false);
+    const [user, setUser] = useState({
+        id: '',
+        name: 'wifi',
+        email: '',
+        entries: 0,
+        joined: ''
+    });
 
-    loadUser = (data) => {
-        this.setState({
-            user: {
-                id: data.id,
-                name: data.name,
-                email: data.email,
-                entries: data.entries,
-                joined: data.joined
-            }
-        })
-    }
+    const loadUser = (data) => {
+        setUser({
+            id: data.id,
+            name: data.name,
+            email: data.email,
+            entries: data.entries,
+            joined: data.joined
+        });
+    };
 
-    calculateFaceLocation = (data) => {
+    const calculateFaceLocation = (data) => {
         const clarifaiFace = data.outputs[0].data.regions[0].region_info.bounding_box;
         const image = document.getElementById('inputimage');
         const width = Number(image.width);
@@ -46,44 +47,39 @@ class App extends Component {
         return {
             leftCol: clarifaiFace.left_col * width,
             topRow: clarifaiFace.top_row * height,
-            rightCol: width - (clarifaiFace.right_col * width),
-            bottomRow: height - (clarifaiFace.bottom_row * height)
-        }
-    }
+            rightCol: width - clarifaiFace.right_col * width,
+            bottomRow: height - clarifaiFace.bottom_row * height
+        };
+    };
 
-    displayFaceBox = (x) => {
-        this.setState({box: x})
-    }
+    const displayFaceBox = (x) => {
+        setBox(x);
+    };
 
-    onInputChange = (event) => {
-        //console.log(event.target.value) //this will get input value-transfer to child component imagelinkform by props
-        this.setState({input: event.target.value})
-    }
+    const onInputChange = (event) => {
+        setInput(event.target.value);
+    };
 
-    onButtonSubmit = () => {
-        // console.log('click')
-        this.setState({imageUrl: this.state.input});
+    const onButtonSubmit = () => {
+        setImageUrl(input);
 
         const USER_ID = 'hkdsyblxuvc7';
-        // Your PAT (Personal Access Token) can be found in the portal under Authentification
         const PAT = 'bc8dfdbc52fe4bc0b8b40e0c50ff47ba';
         const APP_ID = 'my-first-application';
-        // Change these to whatever model and image URL you want to use
         const MODEL_ID = 'face-detection';
         const MODEL_VERSION_ID = '6dc7e46bc9124c5c8824be4822abe105';
-        const IMAGE_URL = this.state.inputs;
+        const IMAGE_URL = input;
 
         const raw = JSON.stringify({
-            "user_app_id": {
-                "user_id": USER_ID,
-                "app_id": APP_ID
+            user_app_id: {
+                user_id: USER_ID,
+                app_id: APP_ID
             },
-            "inputs": [
+            inputs: [
                 {
-                    "data": {
-                        "image": {
-                            "url": `${this.state.input}`
-
+                    data: {
+                        image: {
+                            url: input
                         }
                     }
                 }
@@ -99,62 +95,62 @@ class App extends Component {
             body: raw
         };
 
-        fetch("https://api.clarifai.com/v2/models/face-detection/versions/6dc7e46bc9124c5c8824be4822abe105/outputs", requestOptions)
+        fetch(`https://api.clarifai.com/v2/models/${MODEL_ID}/versions/${MODEL_VERSION_ID}/outputs`, requestOptions)
             .then(response => response.json())
             .then(result => {
                 if (result) {
-                    fetch(' https://evening-meadow-96869.herokuapp.com/image', {
+                    fetch('https://evening-meadow-96869.herokuapp.com/image', {
                         method: 'put',
-                        headers: {'Content-Type': 'application/json'},
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            id: this.state.user.id
+                            id: user.id
                         })
                     })
                         .then(result => result.json())
                         .then(count => {
-                            this.setState(Object.assign(this.state.user, { entries: count}))
+                            setUser(prevUser => ({ ...prevUser, entries: count }));
                         })
-                        .catch(console.log)
+                        .catch(console.log);
                 }
-                this.displayFaceBox(this.calculateFaceLocation(result))
+                displayFaceBox(calculateFaceLocation(result));
             })
-            .catch(error => console.log('error', error));}
+            .catch(error => console.log('error', error));
+    };
 
-    onRouteChange = (route) => {
+    const onRouteChange = (route) => {
         if (route === 'signout') {
-            this.setState(initialState);
+            setUser({
+                id: '',
+                name: '',
+                email: '',
+                entries: 0,
+                joined: ''
+            });
         } else if (route === 'home') {
-            this.setState({isSignedIn: true});
+            setIsSignedIn(true);
         }
-        this.setState({route: route});
-    }
+        setRoute(route);
+    };
 
-    render() {
-        const {isSignedIn, imageUrl, route, box} = this.state;
-        return (<div className='App'>
-            <ParticlesBg className='particles' num={150} type="cobweb" bg={true}/>
-            <Navigation isSignedIn={isSignedIn} onRouteChange={this.onRouteChange}/>
-            {
-                route === 'home' ? <div>
-                <Logo/>
-                <Rank
-                name={this.state.user.name}
-                entries={this.state.user.entries}
-                    />
-                <ImageLinkForm
-                    onInputChange={this.onInputChange}
-                    onButtonSubmit={this.onButtonSubmit}
-                />
-                <FaceRecognition
-                    imageUrl={imageUrl}
-                    box={box}
-                />
-            </div> : (this.state.route === 'signin'
-                ? <SignIn loadUser={this.loadUser} onRouteChange={this.onRouteChange}/> :
-                <Register loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>)
-            }
-        </div>)
-    }
-}
+
+    return (
+        <div className='App'>
+            <ParticlesBg className='particles' num={150} type="cobweb" bg={true} />
+            <Navigation isSignedIn={isSignedIn} onRouteChange={onRouteChange} />
+            {route === 'home' ? (
+                <div>
+                    <Logo />
+                    <Rank name={user.name} entries={user.entries} />
+                    <ImageLinkForm onInputChange={onInputChange} onButtonSubmit={onButtonSubmit} />
+                    <FaceRecognition imageUrl={imageUrl} box={box} />
+                </div>
+            ) : route === 'signin' ? (
+                <SignIn loadUser={loadUser} onRouteChange={onRouteChange} />
+            ) : (
+                <Register loadUser={loadUser} onRouteChange={onRouteChange} />
+            )}
+        </div>
+    );
+};
 
 export default App;
