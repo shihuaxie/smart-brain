@@ -10,7 +10,7 @@ import FaceRecognition from './components/FaceRecognition/FaceRecognition'
 import './App.css';
 import axios from "axios";
 
-axios.defaults.baseURL = 'http://localhost:4321';
+axios.defaults.baseURL = 'sylvia-smart-brain.netlify.app';
 axios.defaults.withCredentials = true;
 // const app = new Clarifai.App({
 //     apiKey: 'your key'
